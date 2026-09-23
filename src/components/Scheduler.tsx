@@ -28,7 +28,6 @@ export function Scheduler({
             sourceCta={sourceCta}
             submitLabel="Request a Time"
             successNote="Request received — we'll send you a confirmed slot in your timezone."
-            successNoteKey={undefined as never}
           />
         )}
       </div>
