@@ -14,16 +14,164 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      leads: {
+        Row: {
+          country: string | null
+          created_at: string
+          email: string | null
+          id: string
+          is_nri: boolean
+          message: string | null
+          name: string
+          phone: string | null
+          project_id: string | null
+          source_cta: string
+        }
+        Insert: {
+          country?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_nri?: boolean
+          message?: string | null
+          name: string
+          phone?: string | null
+          project_id?: string | null
+          source_cta?: string
+        }
+        Update: {
+          country?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_nri?: boolean
+          message?: string | null
+          name?: string
+          phone?: string | null
+          project_id?: string | null
+          source_cta?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "leads_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      projects: {
+        Row: {
+          amenities: string[]
+          bhk: string | null
+          brochure_url: string | null
+          city: string
+          cover_image_url: string | null
+          created_at: string
+          description: string | null
+          developer: string | null
+          featured: boolean
+          floor_plan_url: string | null
+          gallery_urls: string[]
+          id: string
+          map_lat: number | null
+          map_lng: number | null
+          name: string
+          possession_status: string
+          price_aed: number | null
+          price_inr: number | null
+          property_type: string
+          rera_dld_number: string | null
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          amenities?: string[]
+          bhk?: string | null
+          brochure_url?: string | null
+          city: string
+          cover_image_url?: string | null
+          created_at?: string
+          description?: string | null
+          developer?: string | null
+          featured?: boolean
+          floor_plan_url?: string | null
+          gallery_urls?: string[]
+          id?: string
+          map_lat?: number | null
+          map_lng?: number | null
+          name: string
+          possession_status?: string
+          price_aed?: number | null
+          price_inr?: number | null
+          property_type?: string
+          rera_dld_number?: string | null
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          amenities?: string[]
+          bhk?: string | null
+          brochure_url?: string | null
+          city?: string
+          cover_image_url?: string | null
+          created_at?: string
+          description?: string | null
+          developer?: string | null
+          featured?: boolean
+          floor_plan_url?: string | null
+          gallery_urls?: string[]
+          id?: string
+          map_lat?: number | null
+          map_lng?: number | null
+          name?: string
+          possession_status?: string
+          price_aed?: number | null
+          price_inr?: number | null
+          property_type?: string
+          rera_dld_number?: string | null
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +298,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const
