@@ -1,6 +1,6 @@
 export const SITE = {
   name: "Concrest",
-  tagline: "Homes & Custom Construction · Bangalore · Dubai",
+  tagline: "Constructions and Land Developers · International Property",
   whatsappNumber: "919999999999",
   email: "hello@concrest.com",
   phoneIndia: "+91 99999 99999",

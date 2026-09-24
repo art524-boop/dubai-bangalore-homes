@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ProjectCard, type Project } from "@/components/ProjectCard";
 import { MARKETS, MARKET_CITIES, PROPERTY_TYPES, usePrefs } from "@/lib/prefs";
@@ -49,6 +49,10 @@ const EMPTY: Filters = {
 function Catalogue() {
   const { currency, market } = usePrefs();
   const [filters, setFilters] = useState<Filters>({ ...EMPTY, country: market });
+
+  useEffect(() => {
+    setFilters((current) => ({ ...current, country: market, city: "", maxPrice: 0 }));
+  }, [market]);
 
   const { data: projects = [], isLoading } = useQuery({
     queryKey: ["projects"],
