@@ -1,6 +1,5 @@
 import { useState, type ReactNode } from "react";
 import { createLead } from "@/lib/leads";
-import { usePrefs } from "@/lib/prefs";
 
 export function LeadForm({
   sourceCta,
@@ -23,10 +22,9 @@ export function LeadForm({
   compact?: boolean;
   buildMessage?: (message: string) => string;
 }) {
-  const { audience } = usePrefs();
   const [status, setStatus] = useState<"idle" | "sending" | "done" | "error">("idle");
   const [error, setError] = useState("");
-  const [isNri, setIsNri] = useState(audience === "NRI");
+  const [isNri, setIsNri] = useState(false);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -40,7 +38,7 @@ export function LeadForm({
         phone: String(form.get("phone") ?? ""),
         email: String(form.get("email") ?? ""),
         country: String(form.get("country") ?? ""),
-        is_nri: showNri ? isNri : audience === "NRI",
+        is_nri: showNri ? isNri : false,
         project_id: projectId ?? null,
         source_cta: sourceCta,
         message: buildMessage ? buildMessage(raw) : raw,

@@ -1,42 +1,61 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 
-export type Currency = "INR" | "AED";
-export type Audience = "Resident" | "NRI";
+export type Market = "India" | "Australia" | "UAE" | "UK" | "Bali";
+export type Currency = "INR" | "AUD" | "AED" | "GBP" | "IDR";
+
+export const MARKETS: readonly Market[] = ["India", "Australia", "UAE", "UK", "Bali"];
+export const MARKET_CURRENCY: Record<Market, Currency> = {
+  India: "INR",
+  Australia: "AUD",
+  UAE: "AED",
+  UK: "GBP",
+  Bali: "IDR",
+};
+
+export const MARKET_CITIES: Record<Market, readonly string[]> = {
+  India: ["Bangalore", "Mumbai", "Delhi NCR", "Hyderabad", "Chennai", "Pune", "Goa"],
+  Australia: ["Sydney", "Melbourne", "Brisbane", "Perth", "Adelaide", "Gold Coast"],
+  UAE: ["Dubai", "Abu Dhabi", "Sharjah", "Ras Al Khaimah"],
+  UK: ["London", "Manchester", "Birmingham", "Edinburgh"],
+  Bali: ["Canggu", "Seminyak", "Ubud", "Uluwatu", "Sanur"],
+};
+
+export const PROPERTY_TYPES = [
+  "Apartment",
+  "Villa",
+  "Townhouse",
+  "Plot",
+  "Land",
+  "Commercial",
+  "Farm Land",
+] as const;
 
 type PrefsValue = {
+  market: Market;
   currency: Currency;
-  audience: Audience;
-  setCurrency: (c: Currency) => void;
-  setAudience: (a: Audience) => void;
+  setMarket: (market: Market) => void;
 };
 
 const PrefsContext = createContext<PrefsValue>({
+  market: "India",
   currency: "INR",
-  audience: "Resident",
-  setCurrency: () => {},
-  setAudience: () => {},
+  setMarket: () => {},
 });
 
 export function PrefsProvider({ children }: { children: ReactNode }) {
-  const [currency, setCurrency] = useState<Currency>("INR");
-  const [audience, setAudience] = useState<Audience>("Resident");
+  const [market, setMarket] = useState<Market>("India");
 
   useEffect(() => {
-    const c = localStorage.getItem("concrest.currency");
-    const a = localStorage.getItem("concrest.audience");
-    if (c === "INR" || c === "AED") setCurrency(c);
-    if (a === "Resident" || a === "NRI") setAudience(a);
+    const saved = localStorage.getItem("concrest.market");
+    if (MARKETS.includes(saved as Market)) setMarket(saved as Market);
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("concrest.currency", currency);
-  }, [currency]);
-  useEffect(() => {
-    localStorage.setItem("concrest.audience", audience);
-  }, [audience]);
+    localStorage.setItem("concrest.market", market);
+  }, [market]);
 
   return (
-    <PrefsContext.Provider value={{ currency, audience, setCurrency, setAudience }}>
+    <PrefsContext.Provider value={{ market, currency: MARKET_CURRENCY[market], setMarket }}>
       {children}
     </PrefsContext.Provider>
   );
@@ -46,15 +65,14 @@ export const usePrefs = () => useContext(PrefsContext);
 
 export function formatPrice(
   currency: Currency,
-  priceInr: number | null | undefined,
-  priceAed: number | null | undefined,
+  prices: Partial<Record<Currency, number | null | undefined>>,
 ) {
-  if (currency === "AED") {
-    if (priceAed == null) return "Price on request";
-    return `AED ${compact(priceAed)}`;
-  }
-  if (priceInr == null) return "Price on request";
-  return `₹ ${indianCompact(priceInr)}`;
+  const value = prices[currency];
+  if (value == null) return "Price on request";
+  if (currency === "INR") return `₹ ${indianCompact(value)}`;
+  if (currency === "IDR") return `Rp ${compact(value)}`;
+  const symbol = currency === "GBP" ? "£" : currency;
+  return `${symbol} ${compact(value)}`;
 }
 
 function indianCompact(value: number) {
