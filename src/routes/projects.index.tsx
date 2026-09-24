@@ -1,30 +1,33 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ProjectCard, type Project } from "@/components/ProjectCard";
-import { usePrefs } from "@/lib/prefs";
+import { MARKETS, MARKET_CITIES, PROPERTY_TYPES, usePrefs } from "@/lib/prefs";
 
 export const Route = createFileRoute("/projects/")({
   head: () => ({
     meta: [
-      { title: "Property Catalogue — Bangalore & Dubai | Concrest" },
+      { title: "International Property Catalogue | Concrest" },
       {
         name: "description",
         content:
-          "Browse vetted apartments, villas and townhouses across Bangalore and Dubai. Filter by city, type, configuration, budget and possession.",
+          "Browse vetted homes, plots, land and commercial property across India, Australia, the UAE, the UK and Bali.",
       },
-      { property: "og:title", content: "Property Catalogue — Bangalore & Dubai | Concrest" },
+      { property: "og:title", content: "International Property Catalogue | Concrest" },
       {
         property: "og:description",
-        content: "Vetted apartments, villas and townhouses across Bangalore and Dubai.",
+        content: "Vetted homes, plots, land and commercial property across five international markets.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: Catalogue,
 });
 
 type Filters = {
+  country: string;
   city: string;
   property_type: string;
   bhk: string;
@@ -34,6 +37,7 @@ type Filters = {
 };
 
 const EMPTY: Filters = {
+  country: "",
   city: "",
   property_type: "",
   bhk: "",
@@ -43,8 +47,12 @@ const EMPTY: Filters = {
 };
 
 function Catalogue() {
-  const { currency } = usePrefs();
-  const [filters, setFilters] = useState<Filters>(EMPTY);
+  const { currency, market } = usePrefs();
+  const [filters, setFilters] = useState<Filters>({ ...EMPTY, country: market });
+
+  useEffect(() => {
+    setFilters((current) => ({ ...current, country: market, city: "", maxPrice: 0 }));
+  }, [market]);
 
   const { data: projects = [], isLoading } = useQuery({
     queryKey: ["projects"],
@@ -63,18 +71,22 @@ function Catalogue() {
     const uniq = (vals: (string | null)[]) =>
       Array.from(new Set(vals.filter((v): v is string => !!v))).sort();
     return {
+      country: uniq(projects.map((p) => p.country)),
       city: uniq(projects.map((p) => p.city)),
-      property_type: uniq(projects.map((p) => p.property_type)),
+      property_type: Array.from(new Set([...PROPERTY_TYPES, ...uniq(projects.map((p) => p.property_type))])),
       bhk: uniq(projects.map((p) => p.bhk)),
       possession_status: uniq(projects.map((p) => p.possession_status)),
       developer: uniq(projects.map((p) => p.developer)),
     };
   }, [projects]);
 
-  const priceOf = (p: Project) => (currency === "AED" ? p.price_aed : p.price_inr) ?? 0;
+  const priceOf = (p: Project) => ({
+    INR: p.price_inr, AUD: p.price_aud, AED: p.price_aed, GBP: p.price_gbp, IDR: p.price_idr,
+  })[currency] ?? 0;
   const maxAvailable = Math.max(1, ...projects.map(priceOf));
 
   const results = projects.filter((p) => {
+    if (filters.country && p.country !== filters.country) return false;
     if (filters.city && p.city !== filters.city) return false;
     if (filters.property_type && p.property_type !== filters.property_type) return false;
     if (filters.bhk && p.bhk !== filters.bhk) return false;
@@ -85,8 +97,12 @@ function Catalogue() {
     return true;
   });
 
-  const selects: { key: keyof Filters; label: string; values: string[] }[] = [
-    { key: "city", label: "City", values: options.city },
+  const cityValues = filters.country
+    ? Array.from(new Set([...(MARKET_CITIES[filters.country as keyof typeof MARKET_CITIES] ?? []), ...options.city.filter((city) => projects.some((p) => p.country === filters.country && p.city === city))]))
+    : options.city;
+  const selects: { key: keyof Filters; label: string; values: readonly string[] }[] = [
+    { key: "country", label: "Country / market", values: MARKETS },
+    { key: "city", label: "City", values: cityValues },
     { key: "property_type", label: "Property type", values: options.property_type },
     { key: "bhk", label: "Configuration", values: options.bhk },
     { key: "possession_status", label: "Possession", values: options.possession_status },
@@ -97,10 +113,10 @@ function Catalogue() {
     <div className="shell py-14">
       <p className="eyebrow">Catalogue</p>
       <h1 className="mt-2 max-w-2xl text-5xl leading-tight lg:text-6xl">
-        Residences across Bangalore and Dubai
+        Property across five global markets
       </h1>
       <p className="mt-4 max-w-xl text-sm text-muted-foreground">
-        Prices shown in {currency}. Switch currency any time from the header.
+        Prices follow your selected location and are shown in {currency}.
       </p>
 
       <div className="mt-12 grid gap-10 lg:grid-cols-[260px_1fr]">
@@ -125,7 +141,11 @@ function Catalogue() {
                 id={`f-${s.key}`}
                 className="field"
                 value={String(filters[s.key])}
-                onChange={(e) => setFilters((f) => ({ ...f, [s.key]: e.target.value }))}
+                onChange={(e) => setFilters((f) => ({
+                  ...f,
+                  [s.key]: e.target.value,
+                  ...(s.key === "country" ? { city: "" } : {}),
+                }))}
               >
                 <option value="">All</option>
                 {s.values.map((v) => (

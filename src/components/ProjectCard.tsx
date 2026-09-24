@@ -38,7 +38,13 @@ export function ProjectCard({ project }: { project: Project }) {
               Starting
             </p>
             <p className="font-display text-2xl text-accent">
-              {formatPrice(currency, project.price_inr, project.price_aed)}
+              {formatPrice(currency, {
+                INR: project.price_inr,
+                AUD: project.price_aud,
+                AED: project.price_aed,
+                GBP: project.price_gbp,
+                IDR: project.price_idr,
+              })}
             </p>
           </div>
           <Link

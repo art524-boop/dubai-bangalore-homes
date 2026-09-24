@@ -67,6 +67,7 @@ export type Database = {
           bhk: string | null
           brochure_url: string | null
           city: string
+          country: string
           cover_image_url: string | null
           created_at: string
           description: string | null
@@ -80,6 +81,9 @@ export type Database = {
           name: string
           possession_status: string
           price_aed: number | null
+          price_aud: number | null
+          price_gbp: number | null
+          price_idr: number | null
           price_inr: number | null
           property_type: string
           rera_dld_number: string | null
@@ -91,6 +95,7 @@ export type Database = {
           bhk?: string | null
           brochure_url?: string | null
           city: string
+          country?: string
           cover_image_url?: string | null
           created_at?: string
           description?: string | null
@@ -104,6 +109,9 @@ export type Database = {
           name: string
           possession_status?: string
           price_aed?: number | null
+          price_aud?: number | null
+          price_gbp?: number | null
+          price_idr?: number | null
           price_inr?: number | null
           property_type?: string
           rera_dld_number?: string | null
@@ -115,6 +123,7 @@ export type Database = {
           bhk?: string | null
           brochure_url?: string | null
           city?: string
+          country?: string
           cover_image_url?: string | null
           created_at?: string
           description?: string | null
@@ -128,6 +137,9 @@ export type Database = {
           name?: string
           possession_status?: string
           price_aed?: number | null
+          price_aud?: number | null
+          price_gbp?: number | null
+          price_idr?: number | null
           price_inr?: number | null
           property_type?: string
           rera_dld_number?: string | null

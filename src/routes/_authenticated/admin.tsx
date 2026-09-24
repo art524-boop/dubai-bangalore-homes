@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
+import { MARKETS, MARKET_CITIES, PROPERTY_TYPES, type Market } from "@/lib/prefs";
 
 type Project = Tables<"projects">;
 type Lead = Tables<"leads">;
@@ -106,12 +107,13 @@ function ProjectsAdmin() {
       <div className="mt-6 overflow-x-auto border border-border">
         <table className="w-full text-sm">
           <thead className="bg-muted text-left text-secondary">
-            <tr><th className="p-3">Name</th><th className="p-3">City</th><th className="p-3">Type</th><th className="p-3">Status</th><th className="p-3">Featured</th><th className="p-3" /></tr>
+            <tr><th className="p-3">Name</th><th className="p-3">Market</th><th className="p-3">City</th><th className="p-3">Type</th><th className="p-3">Status</th><th className="p-3">Featured</th><th className="p-3" /></tr>
           </thead>
           <tbody>
             {rows.map((p) => (
               <tr key={p.id} className="border-t border-border">
                 <td className="p-3 font-medium text-primary">{p.name}</td>
+                <td className="p-3">{p.country}</td>
                 <td className="p-3">{p.city}</td>
                 <td className="p-3">{p.property_type}</td>
                 <td className="p-3">{p.possession_status}</td>
@@ -135,7 +137,7 @@ function slugify(s: string) {
 
 function ProjectForm({ initial, onDone }: { initial: Partial<Project>; onDone: () => void }) {
   const [p, setP] = useState<Partial<Project>>({
-    city: "Bangalore", property_type: "Apartment", possession_status: "Under Construction",
+    country: "India", city: "Bangalore", property_type: "Apartment", possession_status: "Under Construction",
     gallery_urls: [], amenities: [], featured: false, ...initial,
   });
   const [busy, setBusy] = useState("");
@@ -160,11 +162,12 @@ function ProjectForm({ initial, onDone }: { initial: Partial<Project>; onDone: (
 
   async function save(e: React.FormEvent) {
     e.preventDefault();
-    if (!p.name || !p.city) return setErr("Name and city are required.");
+    if (!p.name || !p.country || !p.city) return setErr("Name, country and city are required.");
     const payload = {
-      slug: p.slug || slugify(p.name), name: p.name, city: p.city,
+      slug: p.slug || slugify(p.name), name: p.name, country: p.country, city: p.city,
       property_type: p.property_type || "Apartment", bhk: p.bhk || null,
       price_inr: p.price_inr ?? null, price_aed: p.price_aed ?? null,
+      price_aud: p.price_aud ?? null, price_gbp: p.price_gbp ?? null, price_idr: p.price_idr ?? null,
       possession_status: p.possession_status || "Under Construction",
       developer: p.developer || null, rera_dld_number: p.rera_dld_number || null,
       cover_image_url: p.cover_image_url || null, gallery_urls: p.gallery_urls ?? [],
@@ -200,16 +203,33 @@ function ProjectForm({ initial, onDone }: { initial: Partial<Project>; onDone: (
         {text("name", "Name")}
         {text("slug", "Slug (auto if blank)")}
         <div>
-          <label className="label-xs">City</label>
-          <select className="field" value={p.city ?? ""} onChange={(e) => set("city", e.target.value)}>
-            <option>Bangalore</option><option>Dubai</option>
+          <label className="label-xs">Country / market</label>
+          <select className="field" value={p.country ?? "India"} onChange={(e) => {
+            const country = e.target.value as Market;
+            setP((current) => ({ ...current, country, city: MARKET_CITIES[country][0] ?? "" }));
+          }}>
+            {MARKETS.map((country) => <option key={country}>{country}</option>)}
           </select>
         </div>
-        {text("property_type", "Property type")}
+        <div>
+          <label className="label-xs">City</label>
+          <select className="field" value={p.city ?? ""} onChange={(e) => set("city", e.target.value)}>
+            {(MARKET_CITIES[(p.country as Market) ?? "India"] ?? []).map((city) => <option key={city}>{city}</option>)}
+          </select>
+        </div>
+        <div>
+          <label className="label-xs">Property type</label>
+          <select className="field" value={p.property_type ?? "Apartment"} onChange={(e) => set("property_type", e.target.value)}>
+            {PROPERTY_TYPES.map((type) => <option key={type}>{type}</option>)}
+          </select>
+        </div>
         {text("bhk", "BHK")}
         {text("developer", "Developer")}
         {text("price_inr", "Price (INR)", "number")}
         {text("price_aed", "Price (AED)", "number")}
+        {text("price_aud", "Price (AUD)", "number")}
+        {text("price_gbp", "Price (GBP)", "number")}
+        {text("price_idr", "Price (IDR)", "number")}
         {text("possession_status", "Possession status")}
         {text("rera_dld_number", "RERA / DLD number")}
         {text("map_lat", "Map latitude", "number")}

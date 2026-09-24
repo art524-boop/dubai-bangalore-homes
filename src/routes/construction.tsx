@@ -5,17 +5,19 @@ import { createLead } from "@/lib/leads";
 export const Route = createFileRoute("/construction")({
   head: () => ({
     meta: [
-      { title: "Custom Home Construction in Bangalore | Concrest" },
+      { title: "Custom Home Construction in India & Australia | Concrest" },
       {
         name: "description",
         content:
-          "Turnkey custom home construction in Bangalore: design and approvals, transparent costing, quality checks and handover with a 10-year structural warranty.",
+          "Turnkey custom home construction in India and Australia, with transparent costing, quality checks and a 10-year structural warranty.",
       },
-      { property: "og:title", content: "Custom Home Construction in Bangalore | Concrest" },
+      { property: "og:title", content: "Custom Home Construction in India & Australia | Concrest" },
       {
         property: "og:description",
         content: "Turnkey design, approvals, costing, construction, quality checks and handover.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: Construction,
@@ -30,39 +32,33 @@ const STEPS = [
   ["Handover", "Snag closure, documentation, and a 10-year structural warranty."],
 ];
 
-const TIERS = [
-  {
-    name: "Basic",
-    rate: 2100,
-    blurb: "Solid, efficient homes with dependable specifications.",
-    items: ["Standard vitrified flooring", "Branded CP & sanitary (entry)", "Emulsion paint", "Basic modular kitchen"],
-  },
-  {
-    name: "Premium",
-    rate: 2750,
-    blurb: "Our most chosen tier — balanced finishes and detailing.",
-    items: ["Large-format tiles / engineered wood", "Mid-tier CP & sanitary", "Designer false ceiling", "Full modular kitchen"],
-  },
-  {
-    name: "Luxury",
-    rate: 3600,
-    blurb: "Architect-led detailing with imported finishes.",
-    items: ["Imported marble & veneer", "Premium CP fittings", "Home automation ready", "Custom joinery throughout"],
-  },
-];
+const CONSTRUCTION_LOCATIONS = [
+  { country: "India", city: "Bangalore", available: true },
+  { country: "India", city: "Bangalore Outskirts", available: true },
+  { country: "Australia", city: "Sydney", available: true },
+  { country: "Australia", city: "Melbourne", available: true },
+  { country: "Australia", city: "Brisbane", available: true },
+  { country: "UAE", city: "Coming soon", available: false },
+  { country: "UK", city: "Coming soon", available: false },
+  { country: "Bali", city: "Coming soon", available: false },
+] as const;
 
 function Construction() {
   const [plot, setPlot] = useState(2400);
   const [floors, setFloors] = useState(2);
-  const [tier, setTier] = useState("Premium");
-  const [city, setCity] = useState("Bangalore");
+  const [location, setLocation] = useState("India|Bangalore");
   const [status, setStatus] = useState<"idle" | "sending" | "done" | "error">("idle");
   const [error, setError] = useState("");
 
-  const rate = TIERS.find((t) => t.name === tier)?.rate ?? 2750;
+  const [country = "India", city = "Bangalore"] = location.split("|");
+  const isAustralia = country === "Australia";
+  const rate = isAustralia ? 220 : 2750;
   const builtUp = plot * 0.75 * floors;
-  const low = Math.round((builtUp * rate) / 100000);
-  const high = Math.round((builtUp * rate * 1.12) / 100000);
+  const low = Math.round(builtUp * rate);
+  const high = Math.round(builtUp * rate * 1.12);
+  const money = (value: number) => isAustralia
+    ? `AUD ${value.toLocaleString("en-AU")}`
+    : `₹ ${value >= 10000000 ? `${(value / 10000000).toFixed(2)} Cr` : `${(value / 100000).toFixed(1)} L`}`;
 
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -74,9 +70,9 @@ function Construction() {
         name: String(form.get("name") ?? ""),
         phone: String(form.get("phone") ?? ""),
         email: String(form.get("email") ?? ""),
-        country: city === "Bangalore" ? "India" : city,
+        country,
         source_cta: "Free Estimate",
-        message: `Plot ${plot} sq ft · ${floors} floor(s) · ${tier} tier · ${city}. Estimated ₹${low}–${high} L (approx ${Math.round(builtUp)} sq ft built-up).`,
+        message: `Plot ${plot} sq ft · ${floors} floor(s) · ${city}, ${country}. Estimated ${money(low)}–${money(high)} (approx ${Math.round(builtUp)} sq ft built-up).`,
       });
       setStatus("done");
     } catch (err) {
@@ -88,7 +84,7 @@ function Construction() {
   return (
     <div>
       <section className="shell py-16">
-        <p className="eyebrow">Custom Construction · Bangalore</p>
+        <p className="eyebrow">Custom Construction · India & Australia</p>
         <h1 className="mt-3 max-w-3xl text-5xl leading-tight lg:text-6xl">
           Build once. Build properly.
         </h1>
@@ -105,35 +101,6 @@ function Construction() {
               <p className="font-display text-4xl text-accent">{String(i + 1).padStart(2, "0")}</p>
               <h3 className="mt-3 text-2xl">{t}</h3>
               <p className="mt-2 text-sm text-muted-foreground">{d}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="shell py-20">
-        <p className="eyebrow">Packages</p>
-        <h2 className="mt-2 text-4xl lg:text-5xl">Three levels of finish</h2>
-        <div className="mt-10 grid gap-6 md:grid-cols-3">
-          {TIERS.map((t) => (
-            <div
-              key={t.name}
-              className={`rounded-sm border bg-card p-8 ${
-                t.name === "Premium" ? "border-accent shadow-lift" : "border-border shadow-soft"
-              }`}
-            >
-              <p className="eyebrow">{t.name}</p>
-              <p className="mt-3 font-display text-4xl">
-                ₹{t.rate.toLocaleString("en-IN")}
-                <span className="text-base text-muted-foreground"> / sq ft</span>
-              </p>
-              <p className="mt-3 text-sm text-muted-foreground">{t.blurb}</p>
-              <ul className="mt-6 space-y-2 text-sm text-secondary">
-                {t.items.map((i) => (
-                  <li key={i} className="border-t border-border pt-2">
-                    {i}
-                  </li>
-                ))}
-              </ul>
             </div>
           ))}
         </div>
@@ -163,7 +130,7 @@ function Construction() {
                   className="field"
                 />
               </div>
-              <div className="grid gap-4 sm:grid-cols-3">
+              <div className="grid gap-4 sm:grid-cols-2">
                 <div>
                   <label className="label-xs" htmlFor="floors">
                     Floors
@@ -182,34 +149,24 @@ function Construction() {
                   </select>
                 </div>
                 <div>
-                  <label className="label-xs" htmlFor="tier">
-                    Tier
+                  <label className="label-xs" htmlFor="location">
+                    Construction location
                   </label>
                   <select
-                    id="tier"
+                    id="location"
                     className="field"
-                    value={tier}
-                    onChange={(e) => setTier(e.target.value)}
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
                   >
-                    {TIERS.map((t) => (
-                      <option key={t.name} value={t.name}>
-                        {t.name}
+                    {CONSTRUCTION_LOCATIONS.map((item) => (
+                      <option
+                        key={`${item.country}-${item.city}`}
+                        value={`${item.country}|${item.city}`}
+                        disabled={!item.available}
+                      >
+                        {item.available ? `${item.country} · ${item.city}` : `${item.country} · Coming soon`}
                       </option>
                     ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="label-xs" htmlFor="city">
-                    City
-                  </label>
-                  <select
-                    id="city"
-                    className="field"
-                    value={city}
-                    onChange={(e) => setCity(e.target.value)}
-                  >
-                    <option>Bangalore</option>
-                    <option>Bangalore Outskirts</option>
                   </select>
                 </div>
               </div>
@@ -217,11 +174,11 @@ function Construction() {
               <div className="rounded-sm border border-accent/40 bg-accent/10 p-6">
                 <p className="eyebrow">Estimated cost</p>
                 <p className="mt-2 font-display text-4xl text-accent">
-                  ₹{low} L – ₹{high} L
+                   {money(low)} – {money(high)}
                 </p>
                 <p className="mt-2 text-xs text-muted-foreground">
-                  Approx. {Math.round(builtUp).toLocaleString("en-IN")} sq ft built-up at ₹
-                  {rate.toLocaleString("en-IN")}/sq ft.
+                   Approx. {Math.round(builtUp).toLocaleString(isAustralia ? "en-AU" : "en-IN")} sq ft built-up at {isAustralia ? "AUD " : "₹"}
+                   {rate.toLocaleString(isAustralia ? "en-AU" : "en-IN")}/sq ft.
                 </p>
               </div>
             </div>

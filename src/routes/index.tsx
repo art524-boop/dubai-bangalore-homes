@@ -9,18 +9,20 @@ import heroBuild from "@/assets/hero-build.jpg";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Concrest — Luxury Homes in Bangalore & Dubai" },
+      { title: "Concrest Group — International Property & Construction" },
       {
         name: "description",
         content:
-          "Find your dream home across Bangalore and Dubai, or build it from the ground up with Concrest turnkey custom construction.",
+          "Discover property across India, Australia, the UAE, the UK and Bali, with custom construction in India and Australia.",
       },
-      { property: "og:title", content: "Concrest — Luxury Homes in Bangalore & Dubai" },
+      { property: "og:title", content: "Concrest Group — International Property & Construction" },
       {
         property: "og:description",
         content:
-          "Find your dream home across Bangalore and Dubai, or build it from the ground up with Concrest turnkey custom construction.",
+          "International property and land, with custom construction in India and Australia.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: Home,
@@ -62,7 +64,7 @@ function Home() {
             img: heroBuy,
             eyebrow: "Real Estate Catalogue",
             title: "Find Your Dream Home",
-            sub: "Bangalore & Dubai",
+             sub: "India · Australia · UAE · UK · Bali",
             body: "A curated catalogue of ready and under-construction residences from developers we have vetted ourselves.",
             to: "/projects" as const,
             cta: "Browse Properties",
@@ -71,7 +73,7 @@ function Home() {
             img: heroBuild,
             eyebrow: "Turnkey Construction",
             title: "Build Your Dream Home",
-            sub: "Custom Construction in Bangalore",
+             sub: "Custom Construction in India & Australia",
             body: "Design, approvals, costing and build — delivered under one accountable contract with a 10-year structural warranty.",
             to: "/construction" as const,
             cta: "Start Building",
@@ -156,8 +158,8 @@ function Home() {
             d: "We shortlist by build quality, title clarity and rental depth — then walk you through the trade-offs honestly.",
           },
           {
-            t: "One team, two markets",
-            d: "Bangalore and Dubai desks share one client file, so cross-border buyers never repeat themselves.",
+             t: "One team, global perspective",
+             d: "Our market specialists share one client brief, so cross-border buyers never repeat themselves.",
           },
           {
             t: "Offline, documented deals",

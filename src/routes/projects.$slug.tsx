@@ -125,7 +125,13 @@ function ProjectDetail() {
             </p>
             <h1 className="mt-2 text-5xl leading-tight">{project.name}</h1>
             <p className="mt-4 font-display text-3xl text-accent">
-              {formatPrice(currency, project.price_inr, project.price_aed)}
+               {formatPrice(currency, {
+                 INR: project.price_inr,
+                 AUD: project.price_aud,
+                 AED: project.price_aed,
+                 GBP: project.price_gbp,
+                 IDR: project.price_idr,
+               })}
             </p>
             <dl className="mt-8 grid gap-6 border-t border-border pt-8 sm:grid-cols-4">
               {[
