@@ -7,17 +7,19 @@ import { OFFICES, SITE, whatsappUrl } from "@/lib/site";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Contact Concrest — Bangalore & Dubai Offices" },
+      { title: "Contact Concrest Group" },
       {
         name: "description",
         content:
           "Talk to the Concrest team in Bangalore or Dubai, send an enquiry, or book a virtual site visit in your own timezone.",
       },
-      { property: "og:title", content: "Contact Concrest — Bangalore & Dubai Offices" },
+      { property: "og:title", content: "Contact Concrest Group" },
       {
         property: "og:description",
         content: "Enquire, visit an office, or book a virtual site visit in your own timezone.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: Contact,

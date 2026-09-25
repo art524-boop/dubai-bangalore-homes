@@ -174,7 +174,7 @@ function Catalogue() {
             <p className="mt-1 text-xs text-muted-foreground">
               Up to{" "}
               {(filters.maxPrice || maxAvailable).toLocaleString(
-                currency === "AED" ? "en-US" : "en-IN",
+                currency === "INR" ? "en-IN" : currency === "AUD" ? "en-AU" : currency === "GBP" ? "en-GB" : currency === "IDR" ? "id-ID" : "en-AE",
               )}
             </p>
           </div>

@@ -50,7 +50,9 @@ function Construction() {
   const [status, setStatus] = useState<"idle" | "sending" | "done" | "error">("idle");
   const [error, setError] = useState("");
 
-  const [country = "India", city = "Bangalore"] = location.split("|");
+  const locationParts = location.split("|");
+  const country = locationParts[0] ?? "India";
+  const city = locationParts[1] ?? "Bangalore";
   const isAustralia = country === "Australia";
   const rate = isAustralia ? 220 : 2750;
   const builtUp = plot * 0.75 * floors;

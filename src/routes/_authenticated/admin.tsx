@@ -206,7 +206,8 @@ function ProjectForm({ initial, onDone }: { initial: Partial<Project>; onDone: (
           <label className="label-xs">Country / market</label>
           <select className="field" value={p.country ?? "India"} onChange={(e) => {
             const country = e.target.value as Market;
-            setP((current) => ({ ...current, country, city: MARKET_CITIES[country][0] ?? "" }));
+            const [city = ""] = MARKET_CITIES[country];
+            setP((current) => ({ ...current, country, city }));
           }}>
             {MARKETS.map((country) => <option key={country}>{country}</option>)}
           </select>

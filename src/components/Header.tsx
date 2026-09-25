@@ -37,9 +37,9 @@ export function Header() {
     <header className="sticky top-0 z-40 border-b border-border/80 bg-background/90 backdrop-blur">
       <div className="shell flex h-16 items-center justify-between gap-4 lg:h-20">
         <Link to="/" className="flex min-w-0 items-center gap-2">
-          <span className="font-display text-2xl tracking-tight">{SITE.name}</span>
+          <span className="font-display text-2xl tracking-tight">{SITE.name} Group</span>
           <span className="hidden max-w-48 text-[9px] leading-tight tracking-[0.14em] uppercase text-muted-foreground sm:inline xl:max-w-none">
-            Concrest Group · Constructions and Land Developers
+            Constructions and Land Developers
           </span>
         </Link>
 
