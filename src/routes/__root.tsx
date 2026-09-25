@@ -81,18 +81,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Concrest — Luxury Homes & Custom Construction" },
+      { title: "Concrest Group — Property, Construction & Land Development" },
       {
         name: "description",
         content:
-          "Curated luxury residences in Bangalore and Dubai, plus turnkey custom home construction in Bangalore.",
+          "International property and land across India, Australia, the UAE, the UK and Bali, with custom construction in India and Australia.",
       },
       { name: "author", content: "Concrest" },
-      { property: "og:title", content: "Concrest — Luxury Homes & Custom Construction" },
+      { property: "og:title", content: "Concrest Group — Property, Construction & Land Development" },
       {
         property: "og:description",
         content:
-          "Curated luxury residences in Bangalore and Dubai, plus turnkey custom home construction in Bangalore.",
+          "International property and land, with custom construction in India and Australia.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
