@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ProjectCard, type Project } from "@/components/ProjectCard";
-import { MARKETS, MARKET_CITIES, PROPERTY_TYPES, usePrefs } from "@/lib/prefs";
+import { getPriceValue, MARKETS, MARKET_CITIES, PROPERTY_TYPES, usePrefs } from "@/lib/prefs";
 
 export const Route = createFileRoute("/projects/")({
   head: () => ({
@@ -80,9 +80,9 @@ function Catalogue() {
     };
   }, [projects]);
 
-  const priceOf = (p: Project) => ({
+  const priceOf = (p: Project) => getPriceValue(currency, {
     INR: p.price_inr, AUD: p.price_aud, AED: p.price_aed, GBP: p.price_gbp, IDR: p.price_idr,
-  })[currency] ?? 0;
+  }) ?? 0;
   const maxAvailable = Math.max(1, ...projects.map(priceOf));
 
   const results = projects.filter((p) => {

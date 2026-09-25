@@ -65,12 +65,34 @@ export function formatPrice(
   currency: Currency,
   prices: Partial<Record<Currency, number | null | undefined>>,
 ) {
-  const value = prices[currency];
+  const value = getPriceValue(currency, prices);
   if (value == null) return "Price on request";
   if (currency === "INR") return `₹ ${indianCompact(value)}`;
   if (currency === "IDR") return `Rp ${compact(value)}`;
   const symbol = currency === "GBP" ? "£" : currency;
   return `${symbol} ${compact(value)}`;
+}
+
+const INR_PER_UNIT: Record<Currency, number> = {
+  INR: 1,
+  AUD: 55,
+  AED: 22.7,
+  GBP: 113,
+  IDR: 0.0052,
+};
+
+export function getPriceValue(
+  currency: Currency,
+  prices: Partial<Record<Currency, number | null | undefined>>,
+) {
+  const exact = prices[currency];
+  if (exact != null) return exact;
+
+  const source = (Object.entries(prices) as [Currency, number | null | undefined][])
+    .find(([, value]) => value != null);
+  if (!source || source[1] == null) return null;
+  const [sourceCurrency, sourceValue] = source;
+  return Math.round((sourceValue * INR_PER_UNIT[sourceCurrency]) / INR_PER_UNIT[currency]);
 }
 
 function indianCompact(value: number) {
