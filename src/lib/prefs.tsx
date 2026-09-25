@@ -31,31 +31,29 @@ export const PROPERTY_TYPES = [
 ] as const;
 
 type PrefsValue = {
-  market: Market;
   currency: Currency;
-  setMarket: (market: Market) => void;
+  setCurrency: (currency: Currency) => void;
 };
 
 const PrefsContext = createContext<PrefsValue>({
-  market: "India",
   currency: "INR",
-  setMarket: () => {},
+  setCurrency: () => {},
 });
 
 export function PrefsProvider({ children }: { children: ReactNode }) {
-  const [market, setMarket] = useState<Market>("India");
+  const [currency, setCurrency] = useState<Currency>("INR");
 
   useEffect(() => {
-    const saved = localStorage.getItem("concrest.market");
-    if (MARKETS.includes(saved as Market)) setMarket(saved as Market);
+    const saved = localStorage.getItem("concrest.currency");
+    if (Object.values(MARKET_CURRENCY).includes(saved as Currency)) setCurrency(saved as Currency);
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("concrest.market", market);
-  }, [market]);
+    localStorage.setItem("concrest.currency", currency);
+  }, [currency]);
 
   return (
-    <PrefsContext.Provider value={{ market, currency: MARKET_CURRENCY[market], setMarket }}>
+    <PrefsContext.Provider value={{ currency, setCurrency }}>
       {children}
     </PrefsContext.Provider>
   );
@@ -67,12 +65,34 @@ export function formatPrice(
   currency: Currency,
   prices: Partial<Record<Currency, number | null | undefined>>,
 ) {
-  const value = prices[currency];
+  const value = getPriceValue(currency, prices);
   if (value == null) return "Price on request";
   if (currency === "INR") return `₹ ${indianCompact(value)}`;
   if (currency === "IDR") return `Rp ${compact(value)}`;
   const symbol = currency === "GBP" ? "£" : currency;
   return `${symbol} ${compact(value)}`;
+}
+
+const INR_PER_UNIT: Record<Currency, number> = {
+  INR: 1,
+  AUD: 55,
+  AED: 22.7,
+  GBP: 113,
+  IDR: 0.0052,
+};
+
+export function getPriceValue(
+  currency: Currency,
+  prices: Partial<Record<Currency, number | null | undefined>>,
+) {
+  const exact = prices[currency];
+  if (exact != null) return exact;
+
+  const source = (Object.entries(prices) as [Currency, number | null | undefined][])
+    .find(([, value]) => value != null);
+  if (!source || source[1] == null) return null;
+  const [sourceCurrency, sourceValue] = source;
+  return Math.round((sourceValue * INR_PER_UNIT[sourceCurrency]) / INR_PER_UNIT[currency]);
 }
 
 function indianCompact(value: number) {

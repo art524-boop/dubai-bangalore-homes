@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ProjectCard, type Project } from "@/components/ProjectCard";
-import { MARKETS, MARKET_CITIES, PROPERTY_TYPES, usePrefs } from "@/lib/prefs";
+import { getPriceValue, MARKETS, MARKET_CITIES, PROPERTY_TYPES, usePrefs } from "@/lib/prefs";
 
 export const Route = createFileRoute("/projects/")({
   head: () => ({
@@ -47,12 +47,12 @@ const EMPTY: Filters = {
 };
 
 function Catalogue() {
-  const { currency, market } = usePrefs();
-  const [filters, setFilters] = useState<Filters>({ ...EMPTY, country: market });
+  const { currency } = usePrefs();
+  const [filters, setFilters] = useState<Filters>(EMPTY);
 
   useEffect(() => {
-    setFilters((current) => ({ ...current, country: market, city: "", maxPrice: 0 }));
-  }, [market]);
+    setFilters((current) => ({ ...current, maxPrice: 0 }));
+  }, [currency]);
 
   const { data: projects = [], isLoading } = useQuery({
     queryKey: ["projects"],
@@ -80,9 +80,9 @@ function Catalogue() {
     };
   }, [projects]);
 
-  const priceOf = (p: Project) => ({
+  const priceOf = (p: Project) => getPriceValue(currency, {
     INR: p.price_inr, AUD: p.price_aud, AED: p.price_aed, GBP: p.price_gbp, IDR: p.price_idr,
-  })[currency] ?? 0;
+  }) ?? 0;
   const maxAvailable = Math.max(1, ...projects.map(priceOf));
 
   const results = projects.filter((p) => {
@@ -116,7 +116,7 @@ function Catalogue() {
         Property across five global markets
       </h1>
       <p className="mt-4 max-w-xl text-sm text-muted-foreground">
-        Prices follow your selected location and are shown in {currency}.
+        Choose a country to filter listings. Use the header currency selector to view prices in {currency}.
       </p>
 
       <div className="mt-12 grid gap-10 lg:grid-cols-[260px_1fr]">
