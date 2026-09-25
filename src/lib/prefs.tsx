@@ -31,31 +31,29 @@ export const PROPERTY_TYPES = [
 ] as const;
 
 type PrefsValue = {
-  market: Market;
   currency: Currency;
-  setMarket: (market: Market) => void;
+  setCurrency: (currency: Currency) => void;
 };
 
 const PrefsContext = createContext<PrefsValue>({
-  market: "India",
   currency: "INR",
-  setMarket: () => {},
+  setCurrency: () => {},
 });
 
 export function PrefsProvider({ children }: { children: ReactNode }) {
-  const [market, setMarket] = useState<Market>("India");
+  const [currency, setCurrency] = useState<Currency>("INR");
 
   useEffect(() => {
-    const saved = localStorage.getItem("concrest.market");
-    if (MARKETS.includes(saved as Market)) setMarket(saved as Market);
+    const saved = localStorage.getItem("concrest.currency");
+    if (Object.values(MARKET_CURRENCY).includes(saved as Currency)) setCurrency(saved as Currency);
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("concrest.market", market);
-  }, [market]);
+    localStorage.setItem("concrest.currency", currency);
+  }, [currency]);
 
   return (
-    <PrefsContext.Provider value={{ market, currency: MARKET_CURRENCY[market], setMarket }}>
+    <PrefsContext.Provider value={{ currency, setCurrency }}>
       {children}
     </PrefsContext.Provider>
   );

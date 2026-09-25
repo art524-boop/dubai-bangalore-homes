@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { SITE } from "@/lib/site";
-import { MARKETS, MARKET_CURRENCY, type Market, usePrefs } from "@/lib/prefs";
+import { MARKET_CURRENCY, type Currency, usePrefs } from "@/lib/prefs";
 
 const NAV = [
   { to: "/projects", label: "Properties" },
@@ -11,18 +11,20 @@ const NAV = [
   { to: "/contact", label: "Contact" },
 ] as const;
 
-function MarketSelect({ value, onChange }: { value: Market; onChange: (v: Market) => void }) {
+const CURRENCIES = Object.values(MARKET_CURRENCY);
+
+function CurrencySelect({ value, onChange }: { value: Currency; onChange: (v: Currency) => void }) {
   return (
     <label className="relative">
-      <span className="sr-only">Location</span>
+      <span className="sr-only">Display currency</span>
       <select
-        aria-label="Location"
+        aria-label="Display currency"
         value={value}
-        onChange={(e) => onChange(e.target.value as Market)}
+        onChange={(e) => onChange(e.target.value as Currency)}
         className="rounded-sm border border-border bg-card px-3 py-2 pr-8 text-xs text-foreground outline-none focus:border-accent"
       >
-        {MARKETS.map((market) => (
-          <option key={market} value={market}>{market} · {MARKET_CURRENCY[market]}</option>
+        {CURRENCIES.map((currency) => (
+          <option key={currency} value={currency}>{currency}</option>
         ))}
       </select>
     </label>
@@ -30,7 +32,7 @@ function MarketSelect({ value, onChange }: { value: Market; onChange: (v: Market
 }
 
 export function Header() {
-  const { market, setMarket } = usePrefs();
+  const { currency, setCurrency } = usePrefs();
   const [open, setOpen] = useState(false);
 
   return (
@@ -57,7 +59,7 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-2">
-          <div className="hidden md:block"><MarketSelect value={market} onChange={setMarket} /></div>
+          <div className="hidden md:block"><CurrencySelect value={currency} onChange={setCurrency} /></div>
           <button
             type="button"
             aria-label="Menu"
@@ -82,7 +84,7 @@ export function Header() {
                 {n.label}
               </Link>
             ))}
-            <div className="mt-3 md:hidden"><MarketSelect value={market} onChange={setMarket} /></div>
+            <div className="mt-3 md:hidden"><CurrencySelect value={currency} onChange={setCurrency} /></div>
           </div>
         </div>
       )}

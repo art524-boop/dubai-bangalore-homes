@@ -47,12 +47,12 @@ const EMPTY: Filters = {
 };
 
 function Catalogue() {
-  const { currency, market } = usePrefs();
-  const [filters, setFilters] = useState<Filters>({ ...EMPTY, country: market });
+  const { currency } = usePrefs();
+  const [filters, setFilters] = useState<Filters>(EMPTY);
 
   useEffect(() => {
-    setFilters((current) => ({ ...current, country: market, city: "", maxPrice: 0 }));
-  }, [market]);
+    setFilters((current) => ({ ...current, maxPrice: 0 }));
+  }, [currency]);
 
   const { data: projects = [], isLoading } = useQuery({
     queryKey: ["projects"],
@@ -116,7 +116,7 @@ function Catalogue() {
         Property across five global markets
       </h1>
       <p className="mt-4 max-w-xl text-sm text-muted-foreground">
-        Prices follow your selected location and are shown in {currency}.
+        Choose a country to filter listings. Use the header currency selector to view prices in {currency}.
       </p>
 
       <div className="mt-12 grid gap-10 lg:grid-cols-[260px_1fr]">
