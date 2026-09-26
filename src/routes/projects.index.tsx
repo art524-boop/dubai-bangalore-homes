@@ -3,7 +3,12 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ProjectCard, type Project } from "@/components/ProjectCard";
-import { getPriceValue, MARKETS, MARKET_CITIES, PROPERTY_TYPES, usePrefs } from "@/lib/prefs";
+import { formatPrice, getPriceValue, MARKETS, MARKET_CITIES, PROPERTY_TYPES, usePrefs } from "@/lib/prefs";
+
+const CONFIGURATIONS = [
+  "Studio", "1 BHK", "2 BHK", "3 BHK", "4 BHK", "5 BHK", "6+ BHK",
+  "Penthouse", "Duplex", "Plot", "Office Space", "Retail Shop", "Warehouse",
+];
 
 export const Route = createFileRoute("/projects/")({
   head: () => ({
@@ -70,15 +75,15 @@ function Catalogue() {
   const options = useMemo(() => {
     const uniq = (vals: (string | null)[]) =>
       Array.from(new Set(vals.filter((v): v is string => !!v))).sort();
+    const inCountry = filters.country ? projects.filter((p) => p.country === filters.country) : projects;
     return {
-      country: uniq(projects.map((p) => p.country)),
-      city: uniq(projects.map((p) => p.city)),
+      city: uniq(inCountry.map((p) => p.city)),
       property_type: Array.from(new Set([...PROPERTY_TYPES, ...uniq(projects.map((p) => p.property_type))])),
-      bhk: uniq(projects.map((p) => p.bhk)),
-      possession_status: uniq(projects.map((p) => p.possession_status)),
-      developer: uniq(projects.map((p) => p.developer)),
+      bhk: Array.from(new Set([...CONFIGURATIONS, ...uniq(projects.map((p) => p.bhk))])),
+      possession_status: Array.from(new Set(["Ready to Move", "Under Construction", "New Launch", ...uniq(projects.map((p) => p.possession_status))])),
+      developer: uniq(inCountry.map((p) => p.developer)),
     };
-  }, [projects]);
+  }, [projects, filters.country]);
 
   const priceOf = (p: Project) => getPriceValue(currency, {
     INR: p.price_inr, AUD: p.price_aud, AED: p.price_aed, GBP: p.price_gbp, IDR: p.price_idr,
@@ -93,13 +98,13 @@ function Catalogue() {
     if (filters.possession_status && p.possession_status !== filters.possession_status)
       return false;
     if (filters.developer && p.developer !== filters.developer) return false;
-    if (filters.maxPrice && priceOf(p) > filters.maxPrice) return false;
+    if (filters.maxPrice && priceOf(p) < filters.maxPrice) return false;
     return true;
   });
 
   const cityValues = filters.country
-    ? Array.from(new Set([...(MARKET_CITIES[filters.country as keyof typeof MARKET_CITIES] ?? []), ...options.city.filter((city) => projects.some((p) => p.country === filters.country && p.city === city))]))
-    : options.city;
+    ? Array.from(new Set([...(MARKET_CITIES[filters.country as keyof typeof MARKET_CITIES] ?? []), ...options.city]))
+    : [];
   const selects: { key: keyof Filters; label: string; values: readonly string[] }[] = [
     { key: "country", label: "Country / market", values: MARKETS },
     { key: "city", label: "City", values: cityValues },
@@ -144,7 +149,7 @@ function Catalogue() {
                 onChange={(e) => setFilters((f) => ({
                   ...f,
                   [s.key]: e.target.value,
-                  ...(s.key === "country" ? { city: "" } : {}),
+                  ...(s.key === "country" ? { city: "", developer: "" } : {}),
                 }))}
               >
                 <option value="">All</option>
@@ -159,7 +164,7 @@ function Catalogue() {
 
           <div>
             <label className="label-xs" htmlFor="f-price">
-              Max price ({currency})
+              Minimum price ({currency})
             </label>
             <input
               id="f-price"
@@ -167,15 +172,14 @@ function Catalogue() {
               min={0}
               max={maxAvailable}
               step={Math.max(1, Math.round(maxAvailable / 100))}
-              value={filters.maxPrice || maxAvailable}
+              value={filters.maxPrice}
               onChange={(e) => setFilters((f) => ({ ...f, maxPrice: Number(e.target.value) }))}
               className="w-full accent-[oklch(0.666_0.155_58.5)]"
             />
             <p className="mt-1 text-xs text-muted-foreground">
-              Up to{" "}
-              {(filters.maxPrice || maxAvailable).toLocaleString(
-                currency === "INR" ? "en-IN" : currency === "AUD" ? "en-AU" : currency === "GBP" ? "en-GB" : currency === "IDR" ? "id-ID" : "en-AE",
-              )}
+              {filters.maxPrice
+                ? `${formatPrice(currency, { [currency]: filters.maxPrice })}+`
+                : "Any price"}
             </p>
           </div>
         </aside>
