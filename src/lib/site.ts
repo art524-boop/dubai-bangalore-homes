@@ -14,13 +14,32 @@ export function whatsappUrl(message: string) {
   return `https://wa.me/${SITE.whatsappNumber}?text=${encodeURIComponent(message)}`;
 }
 
-export const OFFICES = [
+export const TZ_LABELS: Record<string, string> = {
+  "Asia/Kolkata": "IST",
+  "Asia/Dubai": "GST",
+};
+
+export type Office = {
+  city: string;
+  country: string;
+  address: string;
+  days: string;
+  open: string; // "HH:MM" in office timezone
+  close: string;
+  timeZone: string;
+  lat: number;
+  lng: number;
+};
+
+export const OFFICES: Office[] = [
   {
     city: "Bangalore",
     country: "India",
     address: "Level 7, Prestige Atrium, Central Street, Bangalore 560001",
-    hoursLocal: "Mon–Sat · 9:30 AM – 7:00 PM IST",
-    hoursOther: "6:00 AM – 3:30 PM GST",
+    days: "Mon–Sat",
+    open: "09:30",
+    close: "19:00",
+    timeZone: "Asia/Kolkata",
     lat: 12.9716,
     lng: 77.5946,
   },
@@ -28,9 +47,51 @@ export const OFFICES = [
     city: "Dubai",
     country: "UAE",
     address: "Office 1204, Boulevard Plaza Tower 1, Downtown Dubai",
-    hoursLocal: "Mon–Sat · 9:00 AM – 6:00 PM GST",
-    hoursOther: "10:30 AM – 7:30 PM IST",
+    days: "Mon–Sat",
+    open: "09:00",
+    close: "18:00",
+    timeZone: "Asia/Dubai",
     lat: 25.1972,
     lng: 55.2744,
   },
 ];
+
+/** Offset of `timeZone` from UTC in minutes at instant `at`. */
+function tzOffsetMinutes(timeZone: string, at: Date) {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone,
+    hourCycle: "h23",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  }).formatToParts(at);
+  const g = (t: string) => Number(parts.find((p) => p.type === t)?.value);
+  const asUtc = Date.UTC(g("year"), g("month") - 1, g("day"), g("hour") % 24, g("minute"), g("second"));
+  return Math.round((asUtc - at.getTime()) / 60000);
+}
+
+/** Convert "HH:MM" wall time in `fromTz` (today) to a UTC Date. */
+function wallTimeToDate(hhmm: string, fromTz: string) {
+  const [h, m] = hhmm.split(":").map(Number);
+  const now = new Date();
+  const guess = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), h, m);
+  return new Date(guess - tzOffsetMinutes(fromTz, new Date(guess)) * 60000);
+}
+
+function fmtTime(d: Date, timeZone: string) {
+  return new Intl.DateTimeFormat("en-US", { timeZone, hour: "numeric", minute: "2-digit" }).format(d);
+}
+
+export function officeHours(office: Office, displayTz: string = office.timeZone) {
+  const label = TZ_LABELS[displayTz] ?? displayTz;
+  const o = wallTimeToDate(office.open, office.timeZone);
+  const c = wallTimeToDate(office.close, office.timeZone);
+  return `${fmtTime(o, displayTz)} – ${fmtTime(c, displayTz)} ${label}`;
+}
+
+export function secondaryTz(office: Office) {
+  return office.timeZone === "Asia/Kolkata" ? "Asia/Dubai" : "Asia/Kolkata";
+}
