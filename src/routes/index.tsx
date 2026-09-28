@@ -39,7 +39,12 @@ const CREDIBILITY = [
 
 function Home() {
   const scroller = useRef<HTMLDivElement>(null);
-  const { data: featured = [] } = useQuery({
+  const {
+    data: showcase,
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
     queryKey: ["featured-projects"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -48,9 +53,18 @@ function Home() {
         .eq("featured", true)
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return data as Project[];
+      if (data.length) return { label: "Featured", items: data as Project[] };
+      const latest = await supabase
+        .from("projects")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(3);
+      if (latest.error) throw latest.error;
+      return { label: "Latest", items: latest.data as Project[] };
     },
   });
+  const featured = showcase?.items ?? [];
+  const hideSection = !isLoading && !isError && featured.length === 0;
 
   function scrollBy(dir: number) {
     scroller.current?.scrollBy({ left: dir * 380, behavior: "smooth" });

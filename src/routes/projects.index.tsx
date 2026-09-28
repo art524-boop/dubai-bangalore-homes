@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ProjectCard, type Project } from "@/components/ProjectCard";
+import { Skeleton } from "@/components/ui/skeleton";
 import { formatPrice, getPriceValue, MARKETS, MARKET_CITIES, PROPERTY_TYPES, usePrefs } from "@/lib/prefs";
 
 const CONFIGURATIONS = [
@@ -59,7 +60,7 @@ function Catalogue() {
     setFilters((current) => ({ ...current, maxPrice: 0 }));
   }, [currency]);
 
-  const { data: projects = [], isLoading } = useQuery({
+  const { data: projects = [], isLoading, isError, refetch } = useQuery({
     queryKey: ["projects"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -185,18 +186,43 @@ function Catalogue() {
         </aside>
 
         <div>
-          <p className="mb-6 text-xs tracking-[0.14em] uppercase text-muted-foreground">
-            {isLoading ? "Loading…" : `${results.length} properties`}
-          </p>
-          <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-            {results.map((p) => (
-              <ProjectCard key={p.id} project={p} />
-            ))}
-          </div>
-          {!isLoading && results.length === 0 && (
-            <p className="text-sm text-muted-foreground">
-              No properties match these filters yet. Try widening your search.
-            </p>
+          {isError ? (
+            <div className="rounded-sm border border-border bg-card p-8 text-sm">
+              <p className="text-destructive">We couldn't load properties right now.</p>
+              <button type="button" onClick={() => refetch()} className="btn-ink mt-4">
+                Retry
+              </button>
+            </div>
+          ) : isLoading ? (
+            <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3" aria-busy="true">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="space-y-3">
+                  <Skeleton className="aspect-[4/3] w-full" />
+                  <Skeleton className="h-4 w-1/3" />
+                  <Skeleton className="h-6 w-2/3" />
+                  <Skeleton className="h-4 w-1/2" />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <>
+              <p className="mb-6 text-xs tracking-[0.14em] uppercase text-muted-foreground">
+                {results.length} properties
+              </p>
+              <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+                {results.map((p) => (
+                  <ProjectCard key={p.id} project={p} />
+                ))}
+              </div>
+              {results.length === 0 && (
+                <div className="rounded-sm border border-border bg-card p-8 text-sm">
+                  <p className="text-muted-foreground">No properties match your filters.</p>
+                  <button type="button" onClick={() => setFilters(EMPTY)} className="btn-outline mt-4">
+                    Reset
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
