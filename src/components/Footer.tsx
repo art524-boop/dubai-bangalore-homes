@@ -41,9 +41,6 @@ export function Footer() {
             © {new Date().getFullYear()} {SITE.name}. All transactions handled offline with our
             advisory team.
           </span>
-          <Link to="/admin" className="hover:text-primary-foreground/80">
-            Admin
-          </Link>
         </div>
       </div>
     </footer>

@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ProjectCard, type Project } from "@/components/ProjectCard";
+import { Skeleton } from "@/components/ui/skeleton";
 import heroBuy from "@/assets/hero-buy.jpg";
 import heroBuild from "@/assets/hero-build.jpg";
 
@@ -39,7 +40,12 @@ const CREDIBILITY = [
 
 function Home() {
   const scroller = useRef<HTMLDivElement>(null);
-  const { data: featured = [] } = useQuery({
+  const {
+    data: showcase,
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
     queryKey: ["featured-projects"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -48,9 +54,18 @@ function Home() {
         .eq("featured", true)
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return data as Project[];
+      if (data.length) return { label: "Featured", items: data as Project[] };
+      const latest = await supabase
+        .from("projects")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(3);
+      if (latest.error) throw latest.error;
+      return { label: "Latest", items: latest.data as Project[] };
     },
   });
+  const featured = showcase?.items ?? [];
+  const hideSection = !isLoading && !isError && featured.length === 0;
 
   function scrollBy(dir: number) {
     scroller.current?.scrollBy({ left: dir * 380, behavior: "smooth" });
@@ -114,10 +129,11 @@ function Home() {
         </div>
       </section>
 
+      {!hideSection && (
       <section className="shell py-20">
         <div className="flex items-end justify-between gap-6">
           <div>
-            <p className="eyebrow">Featured</p>
+            <p className="eyebrow">{showcase?.label ?? "Featured"}</p>
             <h2 className="mt-2 text-4xl lg:text-5xl">Signature residences</h2>
           </div>
           <div className="hidden gap-2 md:flex">
@@ -134,14 +150,27 @@ function Home() {
           ref={scroller}
           className="mt-10 flex snap-x snap-mandatory gap-6 overflow-x-auto pb-4 [scrollbar-width:none]"
         >
+          {isLoading &&
+            Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="w-[85%] shrink-0 space-y-3 sm:w-[420px]" aria-busy="true">
+                <Skeleton className="aspect-[4/3] w-full" />
+                <Skeleton className="h-4 w-1/3" />
+                <Skeleton className="h-6 w-2/3" />
+              </div>
+            ))}
+          {isError && (
+            <div className="text-sm">
+              <p className="text-destructive">We couldn't load listings right now.</p>
+              <button type="button" onClick={() => refetch()} className="btn-outline mt-3">
+                Retry
+              </button>
+            </div>
+          )}
           {featured.map((p) => (
             <div key={p.id} className="w-[85%] shrink-0 snap-start sm:w-[420px]">
               <ProjectCard project={p} />
             </div>
           ))}
-          {featured.length === 0 && (
-            <p className="text-sm text-muted-foreground">Featured listings are being updated.</p>
-          )}
         </div>
 
         <div className="mt-8">
@@ -150,6 +179,7 @@ function Home() {
           </Link>
         </div>
       </section>
+      )}
 
       <section className="shell grid gap-10 pb-24 md:grid-cols-3">
         {[

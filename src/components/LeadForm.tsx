@@ -11,6 +11,8 @@ export function LeadForm({
   extra,
   compact = false,
   buildMessage,
+  validate,
+  onSuccess,
 }: {
   sourceCta: string;
   projectId?: string | null;
@@ -21,6 +23,8 @@ export function LeadForm({
   extra?: ReactNode;
   compact?: boolean;
   buildMessage?: (message: string) => string;
+  validate?: () => string | null;
+  onSuccess?: () => void;
 }) {
   const [status, setStatus] = useState<"idle" | "sending" | "done" | "error">("idle");
   const [error, setError] = useState("");
@@ -29,6 +33,12 @@ export function LeadForm({
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
+    const invalid = validate?.();
+    if (invalid) {
+      setError(invalid);
+      setStatus("error");
+      return;
+    }
     setStatus("sending");
     setError("");
     try {
@@ -44,6 +54,7 @@ export function LeadForm({
         message: buildMessage ? buildMessage(raw) : raw,
       });
       setStatus("done");
+      onSuccess?.();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
       setStatus("error");

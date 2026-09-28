@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { LeadForm } from "@/components/LeadForm";
 import { Scheduler } from "@/components/Scheduler";
 import { MapEmbed } from "@/components/MapEmbed";
-import { OFFICES, SITE, whatsappUrl } from "@/lib/site";
+import { OFFICES, SITE, whatsappUrl, officeHours, secondaryTz } from "@/lib/site";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -67,8 +67,10 @@ function Contact() {
             </p>
             <h3 className="mt-2 text-3xl">{o.city} office</h3>
             <p className="mt-3 text-sm text-secondary">{o.address}</p>
-            <p className="mt-4 text-sm text-secondary">{o.hoursLocal}</p>
-            <p className="text-sm text-muted-foreground">{o.hoursOther}</p>
+            <p className="mt-4 text-sm text-secondary">
+              {o.days} · {officeHours(o)}
+            </p>
+            <p className="text-sm text-muted-foreground">{officeHours(o, secondaryTz(o))}</p>
             <div className="mt-6">
               <MapEmbed lat={o.lat} lng={o.lng} title={`${o.city} office`} className="h-64" />
             </div>
