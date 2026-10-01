@@ -88,7 +88,7 @@ function Catalogue() {
   }, [projects, filters.country]);
 
   const priceOf = (p: Project) => getPriceValue(currency, {
-    INR: p.price_inr, AUD: p.price_aud, AED: p.price_aed, GBP: p.price_gbp, IDR: p.price_idr,
+    INR: p.price_inr, AUD: p.price_aud,
   }) ?? 0;
   const maxAvailable = Math.max(1, ...projects.map(priceOf));
 

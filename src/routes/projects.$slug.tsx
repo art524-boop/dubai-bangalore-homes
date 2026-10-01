@@ -129,9 +129,6 @@ function ProjectDetail() {
                {formatPrice(currency, {
                  INR: project.price_inr,
                  AUD: project.price_aud,
-                 AED: project.price_aed,
-                 GBP: project.price_gbp,
-                 IDR: project.price_idr,
                })}
             </p>
             <dl className="mt-8 grid gap-6 border-t border-border pt-8 sm:grid-cols-4">
@@ -139,7 +136,7 @@ function ProjectDetail() {
                 ["Type", project.property_type],
                 ["Configuration", project.bhk ?? "—"],
                 ["Possession", project.possession_status],
-                ["RERA / DLD", project.rera_dld_number ?? "—"],
+                ["Registration", project.rera_dld_number ?? "—"],
               ].map(([k, v]) => (
                 <div key={k}>
                   <dt className="eyebrow">{k}</dt>
