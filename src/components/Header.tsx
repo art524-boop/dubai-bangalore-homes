@@ -41,7 +41,7 @@ export function Header() {
         <Link to="/" className="flex min-w-0 items-center gap-2">
           <span className="font-display text-2xl tracking-tight">{SITE.name} Group</span>
           <span className="hidden max-w-48 text-[9px] leading-tight tracking-[0.14em] uppercase text-muted-foreground sm:inline xl:max-w-none">
-            Constructions and Land Developers
+            Property advisory and custom construction across India and Australia
           </span>
         </Link>
 

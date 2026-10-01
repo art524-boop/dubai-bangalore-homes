@@ -1,3 +1,6 @@
+## Architecture decisions
+
+- Portfolio case studies live in `portfolio_projects`; this lets administrators replace illustrative images without code changes.
 <!-- LOVABLE:BEGIN -->
 > [!IMPORTANT]
 > This project is connected to [Lovable](https://lovable.dev). Avoid rewriting

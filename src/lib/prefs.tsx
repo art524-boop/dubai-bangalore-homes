@@ -1,23 +1,17 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 
-export type Market = "India" | "Australia" | "UAE" | "UK" | "Bali";
-export type Currency = "INR" | "AUD" | "AED" | "GBP" | "IDR";
+export type Market = "India" | "Australia";
+export type Currency = "INR" | "AUD";
 
-export const MARKETS: readonly Market[] = ["India", "Australia", "UAE", "UK", "Bali"];
+export const MARKETS: readonly Market[] = ["India", "Australia"];
 export const MARKET_CURRENCY: Record<Market, Currency> = {
   India: "INR",
   Australia: "AUD",
-  UAE: "AED",
-  UK: "GBP",
-  Bali: "IDR",
 };
 
 export const MARKET_CITIES: Record<Market, readonly string[]> = {
   India: ["Bangalore", "Mumbai", "Delhi NCR", "Hyderabad", "Chennai", "Pune", "Goa"],
   Australia: ["Sydney", "Melbourne", "Brisbane", "Perth", "Adelaide", "Gold Coast"],
-  UAE: ["Dubai", "Abu Dhabi", "Sharjah", "Ras Al Khaimah"],
-  UK: ["London", "Manchester", "Birmingham", "Edinburgh"],
-  Bali: ["Canggu", "Seminyak", "Ubud", "Uluwatu", "Sanur"],
 };
 
 export const PROPERTY_TYPES = [
@@ -68,17 +62,12 @@ export function formatPrice(
   const value = getPriceValue(currency, prices);
   if (value == null) return "Price on request";
   if (currency === "INR") return `₹ ${indianCompact(value)}`;
-  if (currency === "IDR") return `Rp ${compact(value)}`;
-  const symbol = currency === "GBP" ? "£" : currency;
-  return `${symbol} ${compact(value)}`;
+  return `${currency} ${compact(value)}`;
 }
 
 const INR_PER_UNIT: Record<Currency, number> = {
   INR: 1,
   AUD: 55,
-  AED: 22.7,
-  GBP: 113,
-  IDR: 0.0052,
 };
 
 export function getPriceValue(

@@ -85,14 +85,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "International property and land across India, Australia, the UAE, the UK and Bali, with custom construction in India and Australia.",
+          "Property advisory and custom construction across India and Australia.",
       },
       { name: "author", content: "Concrest" },
       { property: "og:title", content: "Concrest Group — Property, Construction & Land Development" },
       {
         property: "og:description",
         content:
-          "International property and land, with custom construction in India and Australia.",
+          "Property advisory and custom construction across India and Australia.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

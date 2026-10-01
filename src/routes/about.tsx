@@ -23,7 +23,7 @@ export const Route = createFileRoute("/about")({
 
 const TEAM = [
   ["Arvind Rao", "Managing Partner", "22 years across Bangalore residential development and land due diligence."],
-  ["Farah Siddiqui", "Head, Dubai Desk", "Ex-developer sales lead; DLD-registered and Downtown/Palm specialist."],
+  ["Farah Siddiqui", "Head, Australia Advisory", "Cross-border property advisor supporting clients across Australian markets."],
   ["Nikhil Menon", "Head, Construction", "Structural engineer; 140+ custom homes delivered on private plots."],
 ];
 
@@ -36,7 +36,7 @@ function About() {
           A property firm built like an architecture practice
         </h1>
         <p className="mt-6 max-w-2xl text-secondary">
-          Concrest began as a small construction outfit in Bangalore and grew into a two-market
+          Concrest began as a small construction outfit in Bangalore and grew into an India–Australia
           advisory. We keep the same habits: measured advice, documented process, and a preference
           for saying no to the wrong deal.
         </p>

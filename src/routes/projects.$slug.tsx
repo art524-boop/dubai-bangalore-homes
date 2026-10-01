@@ -42,6 +42,7 @@ function ProjectDetail() {
         .from("projects")
         .select("*")
         .eq("slug", slug)
+        .in("country", ["India", "Australia"])
         .maybeSingle();
       if (error) throw error;
       return data as Project | null;

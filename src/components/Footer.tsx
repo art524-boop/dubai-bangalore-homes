@@ -8,8 +8,7 @@ export function Footer() {
         <div className="md:col-span-2">
           <p className="font-display text-3xl">{SITE.name} Group</p>
           <p className="mt-3 max-w-sm text-sm text-primary-foreground/70">
-            Curated property and land across India, Australia, the UAE, the UK and Bali, with
-            turnkey custom construction in India and Australia.
+            Property advisory and custom construction across India and Australia.
           </p>
         </div>
         <div>
