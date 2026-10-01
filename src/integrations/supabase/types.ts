@@ -61,6 +61,48 @@ export type Database = {
           },
         ]
       }
+      portfolio_projects: {
+        Row: {
+          after_image_url: string
+          before_image_url: string
+          built_up_area: string | null
+          created_at: string
+          display_order: number
+          id: string
+          is_illustrative: boolean
+          location: string
+          project_name: string
+          project_year: number | null
+          updated_at: string
+        }
+        Insert: {
+          after_image_url: string
+          before_image_url: string
+          built_up_area?: string | null
+          created_at?: string
+          display_order?: number
+          id?: string
+          is_illustrative?: boolean
+          location: string
+          project_name: string
+          project_year?: number | null
+          updated_at?: string
+        }
+        Update: {
+          after_image_url?: string
+          before_image_url?: string
+          built_up_area?: string | null
+          created_at?: string
+          display_order?: number
+          id?: string
+          is_illustrative?: boolean
+          location?: string
+          project_name?: string
+          project_year?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       projects: {
         Row: {
           amenities: string[]
