@@ -166,8 +166,8 @@ function ProjectForm({ initial, onDone }: { initial: Partial<Project>; onDone: (
     const payload = {
       slug: p.slug || slugify(p.name), name: p.name, country: p.country, city: p.city,
       property_type: p.property_type || "Apartment", bhk: p.bhk || null,
-      price_inr: p.price_inr ?? null, price_aed: p.price_aed ?? null,
-      price_aud: p.price_aud ?? null, price_gbp: p.price_gbp ?? null, price_idr: p.price_idr ?? null,
+      price_inr: p.price_inr ?? null, price_aed: null,
+      price_aud: p.price_aud ?? null, price_gbp: null, price_idr: null,
       possession_status: p.possession_status || "Under Construction",
       developer: p.developer || null, rera_dld_number: p.rera_dld_number || null,
       cover_image_url: p.cover_image_url || null, gallery_urls: p.gallery_urls ?? [],
@@ -227,10 +227,7 @@ function ProjectForm({ initial, onDone }: { initial: Partial<Project>; onDone: (
         {text("bhk", "BHK")}
         {text("developer", "Developer")}
         {text("price_inr", "Price (INR)", "number")}
-        {text("price_aed", "Price (AED)", "number")}
         {text("price_aud", "Price (AUD)", "number")}
-        {text("price_gbp", "Price (GBP)", "number")}
-        {text("price_idr", "Price (IDR)", "number")}
         {text("possession_status", "Possession status")}
         {text("rera_dld_number", "RERA / DLD number")}
         {text("map_lat", "Map latitude", "number")}

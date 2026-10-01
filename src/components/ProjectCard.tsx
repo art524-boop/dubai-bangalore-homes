@@ -41,9 +41,6 @@ export function ProjectCard({ project }: { project: Project }) {
               {formatPrice(currency, {
                 INR: project.price_inr,
                 AUD: project.price_aud,
-                AED: project.price_aed,
-                GBP: project.price_gbp,
-                IDR: project.price_idr,
               })}
             </p>
           </div>

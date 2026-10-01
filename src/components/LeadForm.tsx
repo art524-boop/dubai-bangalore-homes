@@ -112,7 +112,7 @@ export function LeadForm({
             name="country"
             maxLength={80}
             className="field"
-            placeholder="India, UAE, UK…"
+            placeholder="India or Australia"
           />
         </div>
       </div>

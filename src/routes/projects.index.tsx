@@ -18,12 +18,12 @@ export const Route = createFileRoute("/projects/")({
       {
         name: "description",
         content:
-          "Browse vetted homes, plots, land and commercial property across India, Australia, the UAE, the UK and Bali.",
+          "Browse vetted homes, plots, land and commercial property across India and Australia.",
       },
       { property: "og:title", content: "International Property Catalogue | Concrest" },
       {
         property: "og:description",
-        content: "Vetted homes, plots, land and commercial property across five international markets.",
+        content: "Vetted homes, plots, land and commercial property across India and Australia.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -66,6 +66,7 @@ function Catalogue() {
       const { data, error } = await supabase
         .from("projects")
         .select("*")
+        .in("country", ["India", "Australia"])
         .order("featured", { ascending: false })
         .order("created_at", { ascending: false });
       if (error) throw error;
@@ -87,7 +88,7 @@ function Catalogue() {
   }, [projects, filters.country]);
 
   const priceOf = (p: Project) => getPriceValue(currency, {
-    INR: p.price_inr, AUD: p.price_aud, AED: p.price_aed, GBP: p.price_gbp, IDR: p.price_idr,
+    INR: p.price_inr, AUD: p.price_aud,
   }) ?? 0;
   const maxAvailable = Math.max(1, ...projects.map(priceOf));
 
@@ -119,7 +120,7 @@ function Catalogue() {
     <div className="shell py-14">
       <p className="eyebrow">Catalogue</p>
       <h1 className="mt-2 max-w-2xl text-5xl leading-tight lg:text-6xl">
-        Property across five global markets
+        Property across India and Australia
       </h1>
       <p className="mt-4 max-w-xl text-sm text-muted-foreground">
         Choose a country to filter listings. Use the header currency selector to view prices in {currency}.

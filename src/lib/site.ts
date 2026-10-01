@@ -4,7 +4,6 @@ export const SITE = {
   whatsappNumber: "919999999999",
   email: "hello@concrest.com",
   phoneIndia: "+91 99999 99999",
-  phoneUae: "+971 4 000 0000",
   /** Set this to your Cal.com link (e.g. "https://cal.com/concrest/consult") to
    * show the self-scheduling widget instead of the request form. */
   calLink: "",
@@ -16,7 +15,7 @@ export function whatsappUrl(message: string) {
 
 export const TZ_LABELS: Record<string, string> = {
   "Asia/Kolkata": "IST",
-  "Asia/Dubai": "GST",
+  "Australia/Sydney": "AET",
 };
 
 export type Office = {
@@ -42,17 +41,6 @@ export const OFFICES: Office[] = [
     timeZone: "Asia/Kolkata",
     lat: 12.9716,
     lng: 77.5946,
-  },
-  {
-    city: "Dubai",
-    country: "UAE",
-    address: "Office 1204, Boulevard Plaza Tower 1, Downtown Dubai",
-    days: "Mon–Sat",
-    open: "09:00",
-    close: "18:00",
-    timeZone: "Asia/Dubai",
-    lat: 25.1972,
-    lng: 55.2744,
   },
 ];
 
@@ -93,5 +81,5 @@ export function officeHours(office: Office, displayTz: string = office.timeZone)
 }
 
 export function secondaryTz(office: Office) {
-  return office.timeZone === "Asia/Kolkata" ? "Asia/Dubai" : "Asia/Kolkata";
+  return office.timeZone === "Asia/Kolkata" ? "Australia/Sydney" : "Asia/Kolkata";
 }

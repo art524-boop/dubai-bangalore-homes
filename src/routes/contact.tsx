@@ -11,7 +11,7 @@ export const Route = createFileRoute("/contact")({
       {
         name: "description",
         content:
-          "Talk to the Concrest team in Bangalore or Dubai, send an enquiry, or book a virtual site visit in your own timezone.",
+          "Talk to Concrest about property advisory and custom construction across India and Australia.",
       },
       { property: "og:title", content: "Contact Concrest Group" },
       {
@@ -31,7 +31,7 @@ function Contact() {
       <p className="eyebrow">Contact</p>
       <h1 className="mt-3 max-w-2xl text-5xl leading-tight lg:text-6xl">Let's talk</h1>
       <p className="mt-6 max-w-xl text-sm text-muted-foreground">
-        Call {SITE.phoneIndia} (India) or {SITE.phoneUae} (UAE), message us on{" "}
+         Call {SITE.phoneIndia}, message us on{" "}
         <a
           href={whatsappUrl("Hello Concrest.")}
           target="_blank"

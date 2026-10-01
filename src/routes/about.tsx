@@ -22,9 +22,9 @@ export const Route = createFileRoute("/about")({
 });
 
 const TEAM = [
-  ["Arvind Rao", "Managing Partner", "22 years across Bangalore residential development and land due diligence."],
-  ["Farah Siddiqui", "Head, Dubai Desk", "Ex-developer sales lead; DLD-registered and Downtown/Palm specialist."],
-  ["Nikhil Menon", "Head, Construction", "Structural engineer; 140+ custom homes delivered on private plots."],
+  { name: "Arvind Rao", role: "Managing Partner", detail: "22 years across Bangalore residential development and land due diligence." },
+  { name: "Farah Siddiqui", role: "Head, Australia Advisory", detail: "Cross-border property advisor supporting clients across Australian markets." },
+  { name: "Nikhil Menon", role: "Head, Construction", detail: "Structural engineer; 140+ custom homes delivered on private plots." },
 ];
 
 function About() {
@@ -36,17 +36,21 @@ function About() {
           A property firm built like an architecture practice
         </h1>
         <p className="mt-6 max-w-2xl text-secondary">
-          Concrest began as a small construction outfit in Bangalore and grew into a two-market
+          Concrest began as a small construction outfit in Bangalore and grew into an India–Australia
           advisory. We keep the same habits: measured advice, documented process, and a preference
           for saying no to the wrong deal.
         </p>
 
         <div className="mt-14 grid gap-8 md:grid-cols-3">
-          {TEAM.map(([n, r, d]) => (
-            <div key={n} className="border-t border-border pt-6">
-              <h3 className="text-2xl">{n}</h3>
-              <p className="eyebrow mt-1">{r}</p>
-              <p className="mt-3 text-sm text-muted-foreground">{d}</p>
+          {TEAM.map((person) => (
+            <div key={person.name} className="border-t border-border pt-6">
+              <div className="mb-5 flex aspect-[4/3] items-center justify-center bg-muted text-5xl text-muted-foreground" aria-label={`Photo placeholder for ${person.name}`}>
+                {person.name.split(" ").map((part) => part[0]).join("")}
+              </div>
+              <h3 className="text-2xl">{person.name}</h3>
+              <p className="eyebrow mt-1">{person.role}</p>
+              <p className="mt-3 text-sm text-muted-foreground">{person.detail}</p>
+              <p className="mt-4 text-xs text-muted-foreground">LinkedIn profile pending</p>
             </div>
           ))}
         </div>

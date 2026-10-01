@@ -6,4 +6,6 @@
 - [x] Update header company descriptor
 - [x] Verify build and key pages
 
-- [ ] Narrow all content, currencies, filters, and construction to India and Australia; remove estimate calculator
+- [x] Narrow all content, currencies, filters, and construction to India and Australia; remove estimate calculator
+- [ ] Complete data-driven portfolio and admin controls
+- [ ] Verify key public flows

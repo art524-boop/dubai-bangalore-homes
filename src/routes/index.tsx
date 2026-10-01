@@ -10,17 +10,17 @@ import heroBuild from "@/assets/hero-build.jpg";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Concrest Group — International Property & Construction" },
+      { title: "Concrest Group — India & Australia Property and Construction" },
       {
         name: "description",
         content:
-          "Discover property across India, Australia, the UAE, the UK and Bali, with custom construction in India and Australia.",
+          "Property advisory and custom construction across India and Australia.",
       },
-      { property: "og:title", content: "Concrest Group — International Property & Construction" },
+      { property: "og:title", content: "Concrest Group — India & Australia Property and Construction" },
       {
         property: "og:description",
         content:
-          "International property and land, with custom construction in India and Australia.",
+          "Property advisory and custom construction across India and Australia.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -30,12 +30,15 @@ export const Route = createFileRoute("/")({
 });
 
 const CREDIBILITY = [
-  "RERA Certified",
-  "ISO Certified",
-  "Bank Loan Partners",
-  "10-Year Structural Warranty",
-  "FEMA-Compliant Transactions",
-  "Dedicated NRI Desk",
+  ["Documented Due Diligence", "Clear records and checks before recommendations."],
+  ["Transparent Guidance", "Trade-offs, costs and next steps explained plainly."],
+  ["Accountable Delivery", "One team responsible from brief through handover."],
+];
+
+const TESTIMONIALS = [
+  { name: "Client name", city: "Bangalore", type: "Home buyer", quote: "Testimonial placeholder — replace with a verified client review." },
+  { name: "Client name", city: "Sydney", type: "Property investor", quote: "Testimonial placeholder — replace with a verified client review." },
+  { name: "Client name", city: "Melbourne", type: "Custom home", quote: "Testimonial placeholder — replace with a verified client review." },
 ];
 
 function Home() {
@@ -51,6 +54,7 @@ function Home() {
       const { data, error } = await supabase
         .from("projects")
         .select("*")
+        .in("country", ["India", "Australia"])
         .eq("featured", true)
         .order("created_at", { ascending: false });
       if (error) throw error;
@@ -58,6 +62,7 @@ function Home() {
       const latest = await supabase
         .from("projects")
         .select("*")
+        .in("country", ["India", "Australia"])
         .order("created_at", { ascending: false })
         .limit(3);
       if (latest.error) throw latest.error;
@@ -79,7 +84,7 @@ function Home() {
             img: heroBuy,
             eyebrow: "Real Estate Catalogue",
             title: "Find Your Dream Home",
-             sub: "India · Australia · UAE · UK · Bali",
+             sub: "India · Australia",
             body: "A curated catalogue of ready and under-construction residences from developers we have vetted ourselves.",
             to: "/projects" as const,
             cta: "Browse Properties",
@@ -121,9 +126,10 @@ function Home() {
 
       <section className="border-y border-border bg-card">
         <div className="shell flex flex-wrap items-center justify-center gap-x-10 gap-y-3 py-6">
-          {CREDIBILITY.map((c) => (
-            <span key={c} className="eyebrow text-secondary">
-              {c}
+          {CREDIBILITY.map(([title, detail]) => (
+            <span key={title} className="text-center" title={detail}>
+              <span className="eyebrow block text-secondary">{title}</span>
+              <span className="mt-1 block max-w-52 text-xs text-muted-foreground">{detail}</span>
             </span>
           ))}
         </div>
@@ -201,6 +207,22 @@ function Home() {
             <p className="mt-3 text-sm text-muted-foreground">{b.d}</p>
           </div>
         ))}
+      </section>
+
+      <section className="border-t border-border bg-card py-20">
+        <div className="shell">
+          <p className="eyebrow">What our clients say</p>
+          <h2 className="mt-2 text-4xl">Client perspectives</h2>
+          <div className="mt-10 grid gap-6 md:grid-cols-3">
+            {TESTIMONIALS.map((item, index) => (
+              <article key={index} className="rounded-sm border border-border bg-background p-6">
+                <p className="text-sm leading-relaxed text-secondary">“{item.quote}”</p>
+                <p className="mt-6 font-display text-xl">{item.name}</p>
+                <p className="text-xs uppercase text-muted-foreground">{item.city} · {item.type}</p>
+              </article>
+            ))}
+          </div>
+        </div>
       </section>
     </div>
   );

@@ -5,11 +5,17 @@ export function BeforeAfter({
   after,
   title,
   location,
+  year,
+  builtUpArea,
+  illustrative = false,
 }: {
   before: string;
   after: string;
   title: string;
   location: string;
+  year?: number | null;
+  builtUpArea?: string | null;
+  illustrative?: boolean;
 }) {
   const [pos, setPos] = useState(50);
 
@@ -50,11 +56,16 @@ export function BeforeAfter({
         <span className="absolute right-3 bottom-3 rounded-sm bg-accent px-2 py-1 text-[10px] tracking-[0.16em] uppercase text-white">
           After
         </span>
+        {illustrative && (
+          <span className="absolute left-3 top-3 rounded-sm bg-card/90 px-2 py-1 text-[10px] uppercase text-foreground">
+            Illustrative image
+          </span>
+        )}
       </div>
       <figcaption className="flex items-baseline justify-between gap-3 p-5">
         <span className="font-display text-xl">{title}</span>
-        <span className="text-xs tracking-[0.14em] uppercase text-muted-foreground">
-          {location}
+        <span className="text-right text-xs uppercase text-muted-foreground">
+          {[location, year, builtUpArea].filter(Boolean).join(" · ")}
         </span>
       </figcaption>
     </figure>
